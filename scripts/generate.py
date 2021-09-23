@@ -30,7 +30,8 @@ NORMALIZE = Normalize(mean=[0.48145466, 0.4578275, 0.40821073],
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--config", type=str, required=True, help="Path to configuration file.")
+    parser.add_argument("-c", "--config", type=str, required=False, help="Path to configuration file.", default="./configs/local.json")
+    parser.add_argument("-p", "--prompt", type=str, required=False, help="Prompt text.", default="")
     return parser.parse_args()
 
 
@@ -152,6 +153,9 @@ def train(z, **kwargs):
     with torch.no_grad():
         z.copy_(z.maximum(kwargs['z_min']).minimum(kwargs['z_max']))
 
+def override_prompt(arg_prompt):
+    if arg_prompt:
+        PARAMS.prompts = [phrase.strip() for phrase in arg_prompt.split("|")]
 
 def main():
     model = load_vqgan_model(PARAMS.vqgan_config, PARAMS.vqgan_checkpoint, PARAMS.models_dir).to(DEVICE)
@@ -199,6 +203,8 @@ if __name__ == "__main__":
     print(f"Loading configuration from '{args.config}'")
     with open(args.config, 'r') as f:
         PARAMS = Config(**json.load(f))
+    
+    override_prompt(args.prompt)
 
     print(f"Running on {DEVICE}.")
     print(PARAMS)
