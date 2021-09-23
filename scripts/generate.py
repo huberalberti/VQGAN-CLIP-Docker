@@ -7,7 +7,7 @@ import torch.nn.functional as F
 
 import torchvision.transforms.functional as TF
 
-import numpy as np
+import numpy as npF
 
 from PIL import Image
 
@@ -108,7 +108,7 @@ def checkin(z, losses, **kwargs):
     tqdm.write(f"step: {kwargs['step']}, loss: {sum(losses).item():g}, losses: {losses_str}")
     out = synth(z, model=kwargs['model'])
 
-    filename = f"{PARAMS.output_dir}/{'_'.join(PARAMS.prompts).replace(' ', '_')}.png"
+    filename = f"{PARAMS.output_dir}/{'_'.join(PARAMS.prompts).replace(' ', '_')}_{kwargs['step']}.png"
     TF.to_pil_image(out[0].cpu()).save(filename)
 
 
